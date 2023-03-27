@@ -1,0 +1,11 @@
+C:\Users\iodap\rust_projects\experiments-all\axum-Yew\target\wasm32-unknown-unknown\debug\deps\gloo_file-07c62975b4444d46.rmeta: C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\lib.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\blob.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\file_list.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\file_reader.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\object_url.rs
+
+C:\Users\iodap\rust_projects\experiments-all\axum-Yew\target\wasm32-unknown-unknown\debug\deps\libgloo_file-07c62975b4444d46.rlib: C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\lib.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\blob.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\file_list.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\file_reader.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\object_url.rs
+
+C:\Users\iodap\rust_projects\experiments-all\axum-Yew\target\wasm32-unknown-unknown\debug\deps\gloo_file-07c62975b4444d46.d: C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\lib.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\blob.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\file_list.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\file_reader.rs C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\object_url.rs
+
+C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\lib.rs:
+C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\blob.rs:
+C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\file_list.rs:
+C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\file_reader.rs:
+C:\Users\iodap\.cargo\registry\src\github.com-1ecc6299db9ec823\gloo-file-0.2.3\src\object_url.rs:

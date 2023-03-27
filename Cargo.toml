@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "yew_frontend",
+    "axum_backend",
+]
+exclude = [
+    "slide"
+]

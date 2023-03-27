@@ -1,0 +1,1 @@
+C:\Users\iodap\rust_projects\experiments-all\axum-Yew\target\debug\libaxum_backend.rlib: C:\Users\iodap\rust_projects\experiments-all\axum-Yew\axum_backend\src\lib.rs C:\Users\iodap\rust_projects\experiments-all\axum-Yew\axum_backend\src\routes\mod.rs C:\Users\iodap\rust_projects\experiments-all\axum-Yew\axum_backend\src\routes\return_json_data.rs
