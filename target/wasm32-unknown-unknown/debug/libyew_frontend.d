@@ -1,1 +1,0 @@
-C:\Users\iodap\rust_projects\experiments-all\axum-Yew\target\wasm32-unknown-unknown\debug\libyew_frontend.rlib: C:\Users\iodap\rust_projects\experiments-all\axum-Yew\yew_frontend\src\fetch_json.rs C:\Users\iodap\rust_projects\experiments-all\axum-Yew\yew_frontend\src\lib.rs
