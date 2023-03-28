@@ -81,7 +81,7 @@ N.B: Port 8080 is Yew's default port for running new projects.
 
 Many times during development of your Yew applications, you would find yourself repeating some four actions. Knowing the following four concepts/actions is of paramount importance:
 
-- Components; functional components (recommended) or Struct components (archiac, not recommended).
+- Components; functional components (recommended) or Struct components (not recommended).
 
 - `Properties`
 
@@ -89,9 +89,9 @@ Many times during development of your Yew applications, you would find yourself 
 
 - Hooks (e.g. `use_state()`, `use_context()`, `use_effect`, e.t.c, or even writing your own custom hooks. You'll see examples of these further down below.
 
-- Styles (inline CSS, external CSS, or CSS tooling/prepocessor/frameworks/, e.g TailwindCSS). Again, you would see an example of doing this futher down in this introductory text.
+- Styles (inline CSS, external CSS, or CSS tooling/prepocessor/frameworks/, e.g TailwindCSS). Again, you would see an example of doing this further down in this introductory text.
 
-- Fetch API (for making HTTP requests to your backend - could be axum, actix-web, Rocket, C# .Net, Go's Gin or Fiber or Gorilla, Java Spring, NodeJS, Deno, Django, Flask, Ruby on Rails, PHP Laravel. It does not matter). I'd encourage you use a Rust-based framwork though ;)
+- Fetch API (for making HTTP requests to your backend - could be axum, actix-web, Rocket, C# .Net, Go's Gin or Fiber or Gorilla, Java Spring, NodeJS, Deno, Django, Flask, Ruby on Rails, PHP Laravel. It does not matter). I'd encourage you use a Rust-based framework though ;)
 
 ##### Components
 
@@ -224,25 +224,15 @@ Here, you'll learn about the following hooks:
 
 This is perhaps the most important hook in Yew. It allows you to specify that should a particular value in your the component enclosing the state change, then that component must be re-rendered to reflect such change.
 
-Example:
-
-```rust
-
-```
-
 ###### use_context()
 
-!Todo: Explain in plain words first.
+Allows a parent component to make data available to any component in the tree below it, no matter how deep, without having to pass it down with props.
 
-Example:
-
-```rust
-
-```
+https://yew.rs/docs/concepts/contexts
 
 ###### use_effect(), use_effect_with_deps
 
-Both hooks allows you perform actions / side effects immediately after its enclosing component has finished rendering first time, or every time any one of a tuple of components change. 'use_effect_with_deps' is a little bit special because unlike 'use_effect()', it allows you to call/utilize depencies right inside it the hook's callback. Both hooks allow you to specify an optional destructor. You can check this documentation for nitty-gritty details - https://docs.rs/yew/latest/yew/functional/fn.use_effect.html
+Both hooks allows you perform actions / side effects immediately after its enclosing component has finished rendering first time, or every time any one of a tuple of components change. 'use_effect_with_deps' is a little bit special because unlike 'use_effect()', it allows you to call/utilize dependencies right inside it the hook's callback. Both hooks allow you to specify an optional destructor. You can check this documentation for nitty-gritty details - https://docs.rs/yew/latest/yew/functional/fn.use_effect.html
 
 ```rust
 {
@@ -271,7 +261,7 @@ Both hooks allows you perform actions / side effects immediately after its enclo
 
 ##### Applying Styles
 
-You can appy styles to your Yew app in three ways:
+You can apply styles to your Yew app in three ways:
 
 - inline
 
@@ -280,18 +270,6 @@ You can appy styles to your Yew app in three ways:
 - CSS preprocessors/toolings like TailwindCSS.
 
 Examples of each one are shown below.
-
-###### Inline styles
-
-!To-Do: Show example code for completeness reasons
-
-###### External styles
-
-!To-Do: Show example code for completeness reasons
-
-###### TailwindCSS
-
-!To-Do: Show example code for completeness reasons
 
 ##### Fetch API
 
@@ -341,7 +319,7 @@ Yew's official test pattern is still in development. Keep tabs on this page so y
 
 - wasm-bindgen-futures: Depends on `wasm-bindgen`. This crate bridges the gap between a Rust `Future` and a JavaScript `Promise`. Its `spawn_local` interface is particularly useful for fetching resource from a backend.
 
-- js-sys: Depends on `wasm-bindgen`. This crate allows you to create bindings to JavaScript's standard, built-in ojects, including their methods and properties. This does not include any Web, Node, or any other JS environment APIs. Only the things that are guaranteed to exist in the global scope by the ECMAScript standard. Check https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects to see the built-in ojects `js_sys` create bindings to.
+- js-sys: Depends on `wasm-bindgen`. This crate allows you to create bindings to JavaScript's standard, built-in objects, including their methods and properties. This does not include any Web, Node, or any other JS environment APIs. Only the things that are guaranteed to exist in the global scope by the ECMAScript standard. Check https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects to see the built-in ojects `js_sys` create bindings to.
 
 - web-sys: Depends on `wasm-bindgen`. It provides raw API bindings for Web APIs imported inside `wasm-bindgen`. Each type in `web-sys` has its on cargo feature. With web-sys, you can access `window.fetch`, `Node.prototype.appendChild`, WebGL, WebAudio, and many more!. Find out here: https://rustwasm.github.io/wasm-bindgen/web-sys/index.html. To access ECMAScript standards-compliant JavaScript global objects such as Array, Date, and eval, you'd need to use `js-sys` crate.
 
@@ -361,7 +339,7 @@ To quote one of Yew's maintainers on Discord (username: intendednull);
 Support is pretty much the same for any web framework. In that it works with any grpc or graphql lib that is compatible with wasm. Should be anything that is written in pure rust
 "
 
-##### Notable Yew concepts not convered here:
+##### Notable Yew concepts not covered here:
 
 - Router: https://yew.rs/docs/concepts/router
 
