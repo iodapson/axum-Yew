@@ -377,7 +377,48 @@ let app = Router::new()
 
 #### sharing data between routes
 
-Sharing data between routes in axum is easy. You simply create the data you want to share, typically a struct of fields, derive 'Clone' for it, and then take `axum::Extension` as a parameter wrapping the target data inside the handler function you wish to access the shared data.
+Sharing data between routes in axum is easy. There are three ways to go about doing that:
+
+- Using the `State` extractor.
+
+- Using request extensions.
+
+- Using closure captures.
+
+##### Using the `State` extractor
+
+Here is a code snippet:
+
+```rust
+use axum::{
+    extract::State,
+    routing::get,
+    Router,
+};
+use std::sync::Arc;
+
+struct AppState {
+    // ...
+}
+
+let shared_state = Arc::new(AppState { /* ... */ });
+
+let app = Router::new()
+    .route("/", get(handler))
+    .with_state(shared_state);
+
+async fn handler(
+    State(state): State<Arc<AppState>>,
+) {
+    // ...
+}
+```
+
+Using the `State` extractor should be your preferred approach to share state between route-handlers.
+
+##### using request extensions (`axum::Extension`)
+
+You simply create the data you want to share, typically a struct of fields, derive `Clone` for it, and then take `axum::Extension` as a parameter wrapping the target data inside the handler function you wish to access the shared data.
 
 Since code is best explained with pseudo-code or code, here is a code example:
 
@@ -428,9 +469,55 @@ pub async fn access_shared_data(Extension(extracted_shared_data): Extension<Shar
 }
 ```
 
-###### Please Note:
+##### using closure captures
 
-You can share data between routes using State too. To see how, visit the front-page of axum documentation at docs.rs here: https://docs.rs/axum/0.6.12/axum/
+Here is a sample code snippet:
+
+```rust
+use axum::{
+    Json,
+    extract::{Extension, Path},
+    routing::{get, post},
+    Router,
+};
+use std::sync::Arc;
+use serde::Deserialize;
+
+struct AppState {
+    // ...
+}
+
+let shared_state = Arc::new(AppState { /* ... */ });
+
+let app = Router::new()
+    .route(
+        "/users",
+        post({
+            let shared_state = Arc::clone(&shared_state);
+            move |body| create_user(body, shared_state)
+        }),
+    )
+    .route(
+        "/users/:id",
+        get({
+            let shared_state = Arc::clone(&shared_state);
+            move |path| get_user(path, shared_state)
+        }),
+    );
+
+async fn get_user(Path(user_id): Path<String>, state: Arc<AppState>) {
+    // ...
+}
+
+async fn create_user(Json(payload): Json<CreateUserPayload>, state: Arc<AppState>) {
+    // ...
+}
+
+#[derive(Deserialize)]
+struct CreateUserPayload {
+    // ...
+}
+```
 
 #### middlewares
 
@@ -464,8 +551,7 @@ You could implement `IntoResponse` on a struct type, and use it to denote an err
 
 #### CORS (Cross-Origin Resource Sharing)
 
-This is how you provide protection for your back-end API from being accessed by random requests that do not originate from within the backend-API itself. You specify which backend API endpoints you wish to expose and thus grant external access to using CORS.
-!To-Do: Peer-review this definition/explanation
+CORS allow JavaScript in browsers do things with an API that it is otherwise forbidden to do. It does this by disabling built-in protections browsers have for what JavaScript can do. You specify which backend API endpoints you wish to enable CORS for.
 
 <b>N.B</b>: You need to add crate `tower-http` alongside its `cors` feature to enable cors inside your API.
 
@@ -542,4 +628,6 @@ Please refer to the binary project called `axum_backend` accompanying this repo.
 Discord:
 Matrix: https://matrix.to/#/#tokio-rs/axum:matrix.org
 
-<b>Thank you!!</b>
+<b>Thank you so much for reading!</b>
+
+<i>Special thanks goes to Jonas Platte! He helped so much in making the quality of this axum-slide just superb. He is a great guy!!</i>

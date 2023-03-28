@@ -5,4 +5,4 @@ fn main() {
 }
 
 // Serve this application with trunk command;
-// $ trunk serve --proxy-backend=http://localhost:8080/return-json-data
+// $ trunk serve

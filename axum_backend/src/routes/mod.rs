@@ -3,6 +3,7 @@ mod return_json_data;
 use axum::Extension;
 use axum::{routing::get, Router};
 use return_json_data::return_json_data;
+use tower_http::cors::CorsLayer;
 
 #[derive(Clone)]
 pub struct SharedData {
@@ -15,6 +16,8 @@ pub fn build_routes() -> Router {
         data_one: "I am shared data one (1)".to_owned(),
     };
 
+    let cors = CorsLayer::permissive();
+
     // build our application with a single route for the root-path of our application
     Router::new()
         .route("/access_shared_data", get(access_shared_data)) // * route of concern
@@ -24,6 +27,7 @@ pub fn build_routes() -> Router {
             "/",
             get(|| async { "You're using axum. Try this endpoint: '/return-json-data'" }),
         )
+        .layer(cors)
 }
 
 // * get handler function of concern

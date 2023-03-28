@@ -325,16 +325,10 @@ fn a_sample_component() -> Html {
 
 ###### N.B:
 
-- When your Yew app fetches data from a given API, then provided your Yew project uses Trunk as its build tool, your trunk command to run your app must look like this:
+- When your Yew app fetches data from a given API, and your build tool of choice is Trunk, then serve the application like this:
 
 ```
-$ trunk serve --proxy-backend=https://your-api-endpoint.com
-```
-
-- On your development machine while using localhost for your backend, your backend-API port must be running on localhost, and you must refer to localhost:8080 as the target port too, as in;
-
-```
-$ trunk serve --proxy-backend=http://localhost:8080
+$ trunk serve
 ```
 
 #### Testing

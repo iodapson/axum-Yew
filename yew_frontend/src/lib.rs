@@ -1,6 +1,6 @@
 mod fetch_json;
 
-use fetch_json::TargetData;
+use fetch_json::{FetchJson, TargetData};
 use gloo_net::http::Request;
 //use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
@@ -10,7 +10,12 @@ pub fn app() -> Html {
     let some_value = "sample";
     let option_value = Some("an option");
 
-    let state_data = use_state(|| None);
+    let state_data = use_state(|| TargetData {
+        field_one: String::from("default"),
+        field_two: 0,
+        field_three: String::from("default"),
+        field_four: Some("None".to_string()),
+    });
     {
         let state_data = state_data.clone();
 
@@ -20,14 +25,15 @@ pub fn app() -> Html {
                 let state_data = state_data.clone();
 
                 wasm_bindgen_futures::spawn_local(async move {
-                    let fetched_data: TargetData = Request::get("http://localhost:8080")
-                        .send()
-                        .await
-                        .unwrap()
-                        .json() // asumming FetchedDataType is actually Json
-                        .await
-                        .unwrap();
-                    state_data.set(Some(fetched_data));
+                    let fetched_data: TargetData =
+                        Request::get("http://localhost:8090/return-json-data")
+                            .send()
+                            .await
+                            .unwrap()
+                            .json() // asumming FetchedDataType is actually Json
+                            .await
+                            .unwrap();
+                    state_data.set(fetched_data);
                 });
 
                 || ()
@@ -52,7 +58,7 @@ pub fn app() -> Html {
         }
 
         <p>{"Here is the fetched_data's first field: "}</p>
-        <p>{&state_data.as_ref().unwrap().field_one}</p>
+        <FetchJson field_one = {state_data.field_one.clone()}  field_two = {state_data.field_two} field_three = {state_data.field_three.clone()} />
 
       </>
     }
