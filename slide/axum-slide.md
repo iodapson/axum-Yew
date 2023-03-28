@@ -1,6 +1,6 @@
 ### axum (0.6.11)
 
-The Rust backend framework that focuses on ergonomics and modularity. axum is designed to work with tokio and hyper. Runtime and transport layer independence is not a goal at least for the time being.
+The Rust backend framework that focuses on ergonomics and modularity. axum is designed to work with tokio and hyper.
 
 Documentation: https://docs.rs/axum/latest/axum/
 
@@ -22,23 +22,21 @@ You can also take a look previous iterations of axum here - https://crates.io/cr
 
 - Take full advantage of the tower ( https://crates.io/crates/tower ), and tower-http ( https://crates.io/crates/tower-http ) ecosystem of middleware, services, and utilities.
 
-#### Required dependecies
+#### Required dependencies
 
 To use axum, there are a few required dependencies that you have to pull in. They are:
 
 ```
 [dependencies]
 axum = "<latest-version>"
-hyper = { version = "<latest-version>", features = ["full"] }
 tokio = { version = "<latest-version>", features = ["full"] }
-tower = "<latest-version>"
 ```
 
 'hyper::Server' is re-exported by axum so if that's all you need you don't have to explicitly depend on hyper.
 
 #### A quick taste of axum
 
-The axum API you would see here simple returns a String reponse of "Hello World!" to the console.
+The axum API you would see here simple returns a String response of "Hello World!" to the console.
 
 Create a new Rust binary project using Cargo. Call the project 'first_axum_api'. Enter the following command;
 
@@ -78,6 +76,18 @@ Add tower:
 $ cargo add tower
 ```
 
+Add `tracing`
+
+```
+$ cargo add tracing
+```
+
+Add `tracing-subscriber`
+
+```
+$ cargo add tracing-subscriber
+```
+
 Now type the following code snippet into 'main.rs'
 
 ```rust
@@ -89,7 +99,7 @@ use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() {
-    // initialize tracing
+    // initialise tracing
     tracing_subscriber::fmt::init();
 
     // build our application with a single route for the root-path of our application
@@ -108,19 +118,7 @@ async fn main() {
 }
 ```
 
-Before running this app, add the crates 'tracing' and 'tracing-subscriber'.
-
-```
-$ cargo add tracing
-```
-
-&
-
-```
-$ cargo add tracing-subscriber
-```
-
-Now run the app using `$ cargo run` command and hit 'http://localhost:3001' on your browser or by using any preferred HTTP client.
+Now run the app using the `$ cargo run` command and hit 'http://localhost:3001' on your browser or by using any preferred HTTP client.
 
 Alternatively, you could `$ cargo watch -x run` to make your axum project automatically build and run itself everytime you change something inside your source and save it.
 
@@ -144,16 +142,16 @@ Alternatively, you could `$ cargo watch -x run` to make your axum project automa
 
 ##### defining routes
 
-A route is an explicit mapping of a pair of url or API endpoint to a specified backend service. A backend-service is a functionality which you define.
+A route is an explicit mapping of a pair of url or API end-point to a specified backend service. A backend-service is a functionality which you define.
 
 Routing is done in axum via the `axum::Router` struct (https://docs.rs/axum/latest/axum/struct.Router.html). Your service would require routing methods such as `axum::routing::get`, `axum::routing::post`, e.t.c. and a handler closure/function.
 
-Take a look at the example in the section 'A quick taste of axum' and see if you can identify the route in it and its comprising HTTP routing method (get), and its handler closure.
+Take a look at the example in the section 'A quick taste of axum' and see if you can identify the route in it, its HTTP routing method (get), and its handler closure.
 
 ##### extractors
 
-Extractors are how you pick apart the incoming request to get the parts your handler needs. Commonly headers can be found inside 'axum::extract', 'axum::headers', and 'axum::htty::header'.
-They always run in the order of the function parameters that is from left to right.
+Extractors are how you pick apart the incoming request to get the parts your handler needs. Commonly headers can be found inside `axum::extract`, `axum::headers`, and `axum::http::header`.
+They always run in the order of the function parameters that is, from left to right.
 Here is an example extractor inside a request handler function called 'path':
 
 ```rust
@@ -170,7 +168,7 @@ The difference between 'FromRequestParts' and 'FromRequest' is that you'd implem
 
 Here are examples of both traits being implemented:
 
-<b>implementing FromRequest</b>
+###### implementing `FromRequest`
 
 ```rust
 use axum::{
@@ -220,7 +218,7 @@ let app = Router::new().route("/a_get_handler", get(handler));
 
 Please note that since a request body is an asynchronous stream that can only be consumed once, you can only have one consumer extractor (like what you just saw) that consumes the request body. Therefore, for this reason, axum enforces that a consumer extractor must be the very last argument your handler takes.
 
-<b>implementing FromRequestParts</b>
+###### implementing `FromRequestParts`
 
 ```rust
 use axum::{
@@ -261,7 +259,7 @@ let app = Router::new().route("/foo", get(handler));
 
 ```
 
-N.B: You should not implement 'FromRequestParts' and 'FromRequest' together for the same type. Doing this would invalidate your custom extractor, unless the custome type is a wrapper for another extractor. For a comprehensive detail about extractors in axum, review https://docs.rs/axum/latest/axum/extract/index.html#structs
+N.B: You should not implement `FromRequestParts` and `FromRequest` together for the same type. Doing this would invalidate your custom extractor, unless the custom type is a wrapper for another extractor. For a comprehensive detail about extractors in axum, review https://docs.rs/axum/latest/axum/extract/index.html#structs
 
 Below is an example of writing an extractor that generically wraps another extractor (by implementing both `FromRequest` and `FromRequestsParts`):
 
@@ -350,7 +348,7 @@ pub async fn custom_json_extractor(
 
 ##### returning a response
 
-Any type that implements 'IntoResponse' can be returned as a response by axum. There would be little need to implement IntoResponse manually because axum provides implementations for many common types. It could be neccesary though to implement 'IntoResponse' a custom error type when you want to return the custom error type as a response from handlers
+Any type that implements 'IntoResponse' can be returned as a response by axum. There would be little need to implement IntoResponse manually because axum provides implementations for many common types. It could be necessary though to implement 'IntoResponse' a custom error type when you want to return the custom error type as a response from handlers
 
 ```rust
 use axum::{
@@ -379,7 +377,7 @@ let app = Router::new()
 
 #### sharing data between routes
 
-Sharing data between routes in axum is easy. You simply create the data you want to share typically a struct of fields, derive 'Clone' for it, and then take `axum::Extension` as a parameter wrapping the target data inside the handler function you wish to access the shared data.
+Sharing data between routes in axum is easy. You simply create the data you want to share, typically a struct of fields, derive 'Clone' for it, and then take `axum::Extension` as a parameter wrapping the target data inside the handler function you wish to access the shared data.
 
 Since code is best explained with pseudo-code or code, here is a code example:
 
@@ -430,12 +428,13 @@ pub async fn access_shared_data(Extension(extracted_shared_data): Extension<Shar
 }
 ```
 
-<b>Please Note:</b>
+###### Please Note:
+
 You can share data between routes using State too. To see how, visit the front-page of axum documentation at docs.rs here: https://docs.rs/axum/0.6.12/axum/
 
 #### middlewares
 
-A middleware is a pre-built piece of code that adds features to your app akin to a browser-plugin. A middlware should work seamlessly with your app to be useful.
+A middleware is a pre-built piece of code that adds features to your app akin to a browser-plugin. A middleware should work seamlessly with your app to be useful.
 
 axum does not have its own bespoke middleware system and instead integrates with tower. This means the ecosystem of tower and tower-http middleware all work with axum.
 
@@ -457,15 +456,15 @@ async fn handler() -> Result<String, StatusCode> {
 }
 ```
 
-While it looks like it might fail with a `StatusCode`, this actually isn't an error. If this handler returns 'Err(some_status_code), that will still be converted into a Respnse, and sent back to the client. This is done throught 'StatusCode' `IntoResponse` implementation. These are not considered errors in axum.
-This applies to extractors too. If an extractor doesn't match the request, the request will be rejected and a respose will be returned without calling your handler. See this resource to learn about handling extractor failures - https://docs.rs/axum/latest/axum/extract/index.html
+While it looks like it might fail with a `StatusCode`, this actually isn't an error. If this handler returns 'Err(some_status_code), that will still be converted into a Response, and sent back to the client. This is done through `StatusCode`' `IntoResponse` implementation. These are not considered errors in axum.
+This applies to extractors too. If an extractor doesn't match the request, the request will be rejected and a response will be returned without calling your handler. See this resource to learn about handling extractor failures - https://docs.rs/axum/latest/axum/extract/index.html
 
 You could implement `IntoResponse` on a struct type, and use it to denote an error type.
 !To-Do: Confirm this claim.
 
 #### CORS (Cross-Origin Resource Sharing)
 
-This is how you provide protection for your back-end API from being accessed by random requests that does not originated from within the backend-API itself. You specify which backend API endpoints you wish to expose and thus grant external access to using CORS.
+This is how you provide protection for your back-end API from being accessed by random requests that do not originate from within the backend-API itself. You specify which backend API endpoints you wish to expose and thus grant external access to using CORS.
 !To-Do: Peer-review this definition/explanation
 
 <b>N.B</b>: You need to add crate `tower-http` alongside its `cors` feature to enable cors inside your API.

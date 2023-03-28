@@ -323,7 +323,7 @@ fn a_sample_component() -> Html {
 }
 ```
 
-<b>N.B</b>:
+###### N.B:
 
 - When your Yew app fetches data from a given API, then provided your Yew project uses Trunk as its build tool, your trunk command to run your app must look like this:
 
@@ -339,7 +339,7 @@ $ trunk serve --proxy-backend=http://localhost:8080
 
 #### Testing
 
-Yew's official test patterns are still in development. Keep tabs on this page so you can learn them later https://yew.rs/docs/more/testing
+Yew's official test pattern is still in development. Keep tabs on this page so you can stay informed about it https://yew.rs/docs/more/testing
 
 #### Useful / Helful third-party libraries to use in your Yew web-app
 
@@ -367,7 +367,7 @@ To quote one of Yew's maintainers on Discord (username: intendednull);
 Support is pretty much the same for any web framework. In that it works with any grpc or graphql lib that is compatible with wasm. Should be anything that is written in pure rust
 "
 
-Notable Yew concepts not convered here:
+##### Notable Yew concepts not convered here:
 
 - Router: https://yew.rs/docs/concepts/router
 
@@ -383,6 +383,4 @@ Please refer to the binary project called `yew_backend` accompanying this repo.
 
 Discord: https://discord.gg/yew-701068342760570933
 
-<b>
-Thank you for reading this introductory material on Yew!.
-</b>
+<pre>Thank you for reading this introductory material on Yew!.</pre>
