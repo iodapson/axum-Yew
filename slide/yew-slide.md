@@ -4,48 +4,65 @@
 
 #### What is Yew?
 
-Yew is a modern Rust framework for creating multi-threaded front-end applications that are reliable and efficient using WebAssembly.
+Yew is a modern Rust framework for creating multi-threaded client-side rendered, or server-side rendered applications that are reliable and efficient, using WebAssembly.
 
-It used to be the case that ancient UI were procedural in nature. This means you had to wait until an event/user-action happens or a result is returned before another action/event occurs in a step by step order. You could not do something else unless an anticipated event happens or an anticipated result is received.
-Modern UI (nowadays) are declarative in nature. You describe what should happen when an event happens, but you do not have to wait upon said event in order to move on with your program's execution flow. It is asynchronous. It is reactive.
-It is a declarative programming paradigm based on the idea of asynchronous even processing and data streams.
+It used to be the case in the past that UI was by design procedural in nature. This meant that you had to wait until an event or user-action occured, or when a result was returned before another action/event could follow in a step by step order. You couldn't do anything else unless an anticipated event happened first, or until an anticipated result was received.
 
-For more details on what Reactive Programming is, check out: https://www.baeldung.com/cs/reactive-programming
+Nowadays, UIs are by design declarative in nature. You describe what should happen when an event occurs, but you do not have to keep waiting on said event in order to move-on with your program's execution flow. The modern UI is asynchronous. It is reactive.
+It uses a declarative programming paradigm based on the idea of asynchronous event processing and data streams.
 
-N.B: Knowing the details of how reactive programming works under the hood is not absolutely necessary to understand Yew or even use it at all.
+For details about how Reactive Programming workss, check out this explanation on [`reactive programming`](https://www.baeldung.com/cs/reactive-programming)
+
+Knowing the nitty-gritty details of how reactive programming works under the hood is not absolutely necessary to using Yew.
 
 ### Yew Features
 
-- Features a macro for declaring interactive HTML with Rust expressions. Developers who have experience using JSX in React should feel quite at home when using Yew.
+- Features a `html!` macro for declaring interactive HTML with Rust expressions. Developers who have experience using JSX in React should feel quite at home when using Yew. Maybe we should just call HTML embedded inside Rust source code, RsX.
 
 - Achieves high level performance by minimizing DOM API calls for each render and by making it easy to offload processing to background web workers.
 
 - Supports JavaScript interoperability, allowing developers to leverage NPM packages and integrate with existing JavaScript applications.
 
-### How Yew works under the hood (high-level summary of how your Yew source code written in Rust becomes understood by your browser)
+### High-level summary of how your Yew source code becomes understood by your browser
 
 Yew source code is written in Rust and compiled to WebAssembly (WASM) using the wasm-unknown-unknown target. The resulting WASM binary and any necessary JavaScript and asset files are then packaged together using a build tool like Trunk to create a working UI that can be displayed in a browser.
 
 #### Prepare to write your first Yew application
 
-Asides having Rust installing Rust on your machine, you need to install two development tools. They are:
+Asides having Rust installed on your machine, you need to install two additional development tools, especially when you wish to build a client-side rendered Yew application. They are:
 
-- WebAssembly target (wasm32-unknown-unknown)
+- WebAssembly target (`wasm32-unknown-unknown`)
 
-- Trunk. It will be your build tool build your Yew artifacts into Wasm. There are three alternatives to Trunk. They are 'wasm-pack', 'wasm-run', and 'xtask-wasm' which is still in early development.
+`wasm32-unknown-unknown` installation:
 
-You can find installation instructions for these tools here: https://yew.rs/docs/getting-started/introduction
+```
+$ rustup target add wasm32-unknown-unknown
+```
+
+- A build tool, e.g `trunk` which is the de-facto build tool for building Yew artifacts into Wasm. There are three alternatives to trunk. They are; `wasm-pack`(https://rustwasm.github.io/wasm-pack), `wasm-run`(https://github.com/IMI-eRnD-Be/wasm-run), and `xtask-wasm`(https://github.com/rustminded/xtask-wasm/). The last one is still in early development.
+
+`trunk` installation:
+
+```
+$ cargo install --locked trunk
+```
 
 #### Meet Yew!
 
-For a quick taste of Yew's syntax, here is an hello-world Yew app that simply renders "Hello World" on your browser's view pane:
+For a quick taste of Yew's syntax, you'll soon seen the code of a simple Yew app that renders "Hello World" on your browser's view-pane.
+
+1. First create a new cargo bin project named as `hello_world_yew`
+
+2. Add the `yew` as a dependency for `hello_world_yew` by running command - `$ cargo add yew -F csr`.
+
+3. Inside your `main.rs` file, type this the following code:
 
 ```rust
-// Hello world Yew Application with single function component 'App'
+// Hello world Yew Application with single function component named 'App'
 
 use yew::prelude::*;
 
-#[function_component(App)]
+#[function_component(App)] // the attribute declares a component called 'App'
 fn app() -> Html {
     html! {
         <h1>{ "Hello World" }</h1>
@@ -53,39 +70,44 @@ fn app() -> Html {
 }
 
 fn main() {
-    yew::Renderer::<App>::new().render();
+    yew::Renderer::<App>::new().render(); // render component App on the browser screen
 }
 ```
 
-Project Requirements:
+4. Inside your `hello_world_yew`'s root-level directory, create a template `index.html` file. Its path should look similar to - `hello_world_yew/index.html`.
+   Trunk needs a `index.html` file to build your yew project. Inside the `index.html` file, optionally change your `<title>` tag's value to 'Hello World Yew!'.
 
-To run the above code, you need to
+5. Now, you can run the yew app you just create by using trunk to serve it via command `$ trunk serve`.
 
-1. Create a new cargo bin project called `hello_world_yew'
-2. Add the 'yew' as a dependency crate by running command `$ cargo add yew -F csr`. Section 'Yew Dependencies' sheds more light on what the '-F csr' part (argument) of this command means.
-3. Inside your 'main.rs' file, copy, paste, and save the above code
-4. Inside your project's root-level dir, create a template `index.html` file. Its path should look similar to this; <pre>hello_world_yew/index.html'</pre>. Trunk needs it to build your yew project. Optionally change your title tag's value to 'Hello World Yew!'.
-5. Run the project by using trunk to serve it via command `$ trunk serve -o`
-6. Check 'http://localhost:8080' on your choice browser to see the project running.
+6. Check <pre>http://localhost:8080</pre> on your choice browser to see the project running.
 
-N.B: Port 8080 is Yew's default port for running new projects.
+N.B: Port 8080 is Yew's default port for running Yew apps.
 
-#### Some Commonly Used Yew Dependencies
+#### Some Commonly Used Dependencies in Yew apps
 
-- yew: Depending on the nature of your project, you have to between features 'csr' (client-side render), 'ssr' (server-side render), or even 'ssr-hydrate'. This intro's is Client-Side Render.
-- web-sys: For accessing DOM-specific constructs such as 'HtmlInputElement'
-- serde-json: A JSON serialization file format crate. More specifically, you can parse marshalled/serialized/encoded/JSON received from a user or even an API endpoint.
-- serde: A framework for serializing and deserializng Rust structures efficiently and generically.
+- `yew`: Depending on the nature of your app, you have to choose between features `csr` (for a client-side rendered yew app), `ssr` (server-side rendered), or even `hydration` (enables hydration support).
+
+This Yew introductory text is predominantly about building client-side rendered Yew applications.
+
+- [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen): a library and tool that enables calls from JavaScript to Rust, and back from Rust to JavaScript.
+
+- [`wasm-bindgen-futures`](https://crates.io/crates/wasm-bindgen-futures): for executing Rust Futures as JavaScript Promise
+
+- [`web-sys`](https://crates.io/crates/web-sys): For accessing DOM-specific constructs such as `HtmlInputElement`.
+
+- [`serde`](https://crates.io/crates/serde): Serde is a framework for serializing and deserializing Rust datastructures efficiently and generically. More specifically, with serde your Yew application can parse JSON data received from a user or an API endpoint.
+
+- [`gloo-net`](https://crates.io/crates/gloo-net): For making fetch calls.
 
 #### Yew Fundamentals
 
-Many times during development of your Yew applications, you would find yourself repeating some four actions. Knowing the following four concepts/actions is of paramount importance:
+Over time, across many Yew app development cycles, you'll find yourself repeating and utilizing some common patterns and concepts. The following are some of these well-known reoccuring patterns and tasks you should master to ease and speed-up your Yew applications' development process.
 
-- Components; functional components (recommended) or Struct components (not recommended).
+- [`Components`](#`components`). There are two flavors - functional components (recommended) and Struct components (not recommended).
 
-- `Properties`
+- [`Properties`](#properties)
 
-- `Callback`
+- [`Callback`](#callback)
 
 - Hooks (e.g. `use_state()`, `use_context()`, `use_effect`, e.t.c, or even writing your own custom hooks. You'll see examples of these further down below.
 
@@ -202,12 +224,6 @@ For greater detail about `Properties`, refer to this piece of Yew.rs documentati
 
 A Callback, not to confused with a callback/callback-function which is simply functions you pass as values for events such as on_click, is particularly useful for passing data back up to a parent component from a child component. You couldn't just can do this with `Properties`.
 
-Here is an example:
-
-```rust
-
-```
-
 ##### Hooks
 
 Hooks are utility functions you call inside components streamline logic inside. Hooks are wrapper arounds common-reoccuring patterns, logic, or behavior, for example there is a hook called 'use_state()' which allows you to rerender a component each time the value passed to it changes. Yew itself provides you with some hooks (e.g, 'use_state()'). Of course, you can create your own custom hook.
@@ -273,7 +289,7 @@ Examples of each one are shown below.
 
 ##### Fetch API
 
-You can make HTTP request to any backend service from inside your Yew application using asynchronous `gloo_net::http::Request` and `wasm_bindgen_futures' (which bridges Rust's async with JavaScript Promise).
+You can make HTTP request to any backend service from inside your Yew application using asynchronous `gloo_net::http::Request` and `wasm_bindgen_futures` (which bridges Rust's async with JavaScript Promise).
 
 Here is a sample code snippet that fetches data from an axum API, and then update a state with the returned data, hence causing a re-render of the screen to display the changes:
 

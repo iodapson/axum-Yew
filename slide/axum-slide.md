@@ -36,26 +36,20 @@ tokio = { version = "<latest-version>", features = ["full"] }
 
 #### A quick taste of axum
 
-The axum API you would see here simple returns a String response of "Hello World!" to the console.
+The axum API you would see here simple returns a String response of "Hello World!".
 
-Create a new Rust binary project using Cargo. Call the project 'first_axum_api'. Enter the following command;
+First create a new Rust binary project using Cargo. Call the project 'first_axum_api'.
 
 ```
 $ cargo new first_axum_api
 ```
 
-Next, make sure you have the following crates installed for your 'first_axum_api' project by running the following commands;
+Next, make sure you have the following crates added to `first_axum_api`.
 
 Add axum:
 
 ```
 $ cargo add axum
-```
-
-Add hyper:
-
-```
-$ cargo add hyper -F full
 ```
 
 Add tokio:
@@ -70,12 +64,6 @@ or
 $ cargo add tokio -F macros -F rt-multi-thread
 ```
 
-Add tower:
-
-```
-$ cargo add tower
-```
-
 Add `tracing`
 
 ```
@@ -88,7 +76,9 @@ Add `tracing-subscriber`
 $ cargo add tracing-subscriber
 ```
 
-Now type the following code snippet into 'main.rs'
+##### Hello-world code example
+
+Type the following code snippet into 'main.rs'
 
 ```rust
 use axum::{
@@ -118,7 +108,7 @@ async fn main() {
 }
 ```
 
-Now run the app using the `$ cargo run` command and hit 'http://localhost:3001' on your browser or by using any preferred HTTP client.
+Now run the app using the `$ cargo run` command and hit 'http://localhost:3001' using any preferred HTTP client.
 
 Alternatively, you could `$ cargo watch -x run` to make your axum project automatically build and run itself everytime you change something inside your source and save it.
 
@@ -142,33 +132,33 @@ Alternatively, you could `$ cargo watch -x run` to make your axum project automa
 
 ##### defining routes
 
-A route is an explicit mapping of a pair of url or API end-point to a specified backend service. A backend-service is a functionality which you define.
+A route is an explicit mapping of a pair of url or API end-point to a specific backend service. A backend-service is functionality which you define.
 
-Routing is done in axum via the `axum::Router` struct (https://docs.rs/axum/latest/axum/struct.Router.html). Your service would require routing methods such as `axum::routing::get`, `axum::routing::post`, e.t.c. and a handler closure/function.
+Routing is done in axum via the `axum::Router` struct (https://docs.rs/axum/latest/axum/struct.Router.html). Your service would require routing methods such as `axum::routing::get`, `axum::routing::post`, e.t.c. and a route-handler function/closure.
 
-Take a look at the example in the section 'A quick taste of axum' and see if you can identify the route in it, its HTTP routing method (get), and its handler closure.
+Take a look at the code example in the section [A quick taste of axum](#hello-world-code-example) and see if you can identify the route in it; its HTTP routing method (get), and its handler closure.
 
 ##### extractors
 
-Extractors are how you pick apart the incoming request to get the parts your handler needs. Commonly headers can be found inside `axum::extract`, `axum::headers`, and `axum::http::header`.
-They always run in the order of the function parameters that is, from left to right.
+Extractors are how you pick apart any incoming request to get constituent parts that a route-handler may need. Commonly used extractors can be found inside modules `axum::extract`, `axum::headers`, and `axum::http::header`.
+
+Extractors always run in the order of occurrence inside a route-handler function's parameters, from left to right.
+
 Here is an example extractor inside a request handler function called 'path':
 
 ```rust
 use axum::extract::{Path, Query Json};
 use std::collections::HashMap;
 
-async fn path( Path(user_id): Path<u32>) {}
+async fn path( Path(user_id): Path<u32>) {} // this route-handler function has just one extractor - Path
 
-async fn json( Json(payload): Json<serde_json::Value>) {}
+async fn json( Json(payload): Json<serde_json::Value>) {} // this route-handler function has just one extractor - Json
 ```
 
-You can define your own custom extractor. Any type that implements 'FromRequest' or 'FromRequestParts' is an axum extractor.
-The difference between 'FromRequestParts' and 'FromRequest' is that you'd implement 'FromRequestParts' if you extractor doesn't need access to the request body, whereas, if your extractor needs to consume the request body (e.g, by delaying with a timeout), then you must implement 'FromRequest'.
+You can define your own custom extractor. Any type that implements `FromRequest` or `FromRequestParts` is an axum extractor.
+The difference between 'FromRequestParts' and 'FromRequest' is that you'd want to implement 'FromRequestParts' if your extractor doesn't need access to the request body, whereas, if your extractor needs to consume the request body (e.g, by delaying with a timeout), then you must implement 'FromRequest'.
 
-Here are examples of both traits being implemented:
-
-###### implementing `FromRequest`
+###### `FromRequest` implementation
 
 ```rust
 use axum::{
@@ -185,7 +175,7 @@ use axum::{
     },
 };
 
-struct CustomExtractor(String);
+struct CustomExtractor(Bytes);
 
 #[async_trait]
 impl<S, B> FromRequest<S, B> for CustomExtractor
@@ -202,13 +192,13 @@ where
             .await
             .map_err(IntoResponse::into_response)?;
 
-        // your custom extrator's logic goes here ... you can mutate body to fit your business logic
+        // your custom extractor's logic goes here ... you can mutate body to fit your business logic
 
         Ok(Self(body))
     }
 }
 
-// Time to use 'CustomExtrator' inside a request handler
+// Time to use 'CustomExtractor' inside a request handler
 async fn handler(CustomExtractor(body): CustomExtractor) {
   // ...
 }
@@ -216,9 +206,55 @@ async fn handler(CustomExtractor(body): CustomExtractor) {
 let app = Router::new().route("/a_get_handler", get(handler));
 ```
 
-Please note that since a request body is an asynchronous stream that can only be consumed once, you can only have one consumer extractor (like what you just saw) that consumes the request body. Therefore, for this reason, axum enforces that a consumer extractor must be the very last argument your handler takes.
+###### Another `FromRequest` implementation (for a generic struct)
 
-###### implementing `FromRequestParts`
+```rust
+use axum::{
+    async_trait,
+    extract::FromRequest,
+    headers::{authorization::Bearer, Authorization},
+    http::Request,
+    response::{IntoResponse, Response},
+    Json, RequestExt, TypedHeader,
+};
+
+struct MyExtractor<T> {
+    bearer_token: String,
+    payload: T,
+}
+
+#[async_trait]
+impl<S, B, T> FromRequest<S, B> for MyExtractor<T>
+where
+    B: Send + 'static,
+    S: Send + Sync,
+    Json<T>: FromRequest<(), B>,
+    T: 'static,
+{
+    type Rejection = Response;
+
+    async fn from_request(mut req: Request<B>, _state: &S) -> Result<Self, Self::Rejection> {
+        let TypedHeader(auth_header) = req
+            .extract_parts::<TypedHeader<Authorization<Bearer>>>()
+            .await
+            .map_err(|err| err.into_response())?;
+
+        let Json(payload) = req
+            .extract::<Json<T>, _>()
+            .await
+            .map_err(|err| err.into_response())?;
+
+        Ok(Self {
+            bearer_token: auth_header.token().to_owned(),
+            payload,
+        })
+    }
+}
+```
+
+Please note that since a request body is an asynchronous stream that can only be consumed once, you can only have one consumer extractor (like what you just saw) that consumes the request body. Therefore, for this reason, axum enforces that a consumer extractor must be the very last argument your route-handler function takes.
+
+###### `FromRequestParts` implementation
 
 ```rust
 use axum::{
@@ -259,7 +295,7 @@ let app = Router::new().route("/foo", get(handler));
 
 ```
 
-N.B: You should not implement `FromRequestParts` and `FromRequest` together for the same type. Doing this would invalidate your custom extractor, unless the custom type is a wrapper for another extractor. For a comprehensive detail about extractors in axum, review https://docs.rs/axum/latest/axum/extract/index.html#structs
+N.B: You should not implement `FromRequestParts` and `FromRequest` together for the same type. Doing this would invalidate your custom extractor, unless the custom extractor type is a wrapper for another extractor. For a comprehensive detail about extractors in axum, review https://docs.rs/axum/latest/axum/extract/index.html#structs
 
 Below is an example of writing an extractor that generically wraps another extractor (by implementing both `FromRequest` and `FromRequestsParts`):
 
@@ -348,7 +384,11 @@ pub async fn custom_json_extractor(
 
 ##### returning a response
 
-Any type that implements 'IntoResponse' can be returned as a response by axum. There would be little need to implement IntoResponse manually because axum provides implementations for many common types. It could be necessary though to implement 'IntoResponse' a custom error type when you want to return the custom error type as a response from handlers
+Any type that implements `IntoResponse` can be returned as a response by axum.
+
+There would be little need to implement `IntoResponse` manually because axum provides implementations for many common types. It could be necessary though to implement `IntoResponse` for a custom error type when you want to return the custom type as an error-response from route handlers.
+
+<pre>Code example of route-handlers that return responses:</pre>
 
 ```rust
 use axum::{
@@ -385,7 +425,7 @@ Sharing data between routes in axum is easy. There are three ways to go about do
 
 - Using closure captures.
 
-##### Using the `State` extractor
+##### Using the `axum::State` extractor
 
 Here is a code snippet:
 
@@ -418,9 +458,7 @@ Using the `State` extractor should be your preferred approach to share state bet
 
 ##### using request extensions (`axum::Extension`)
 
-You simply create the data you want to share, typically a struct of fields, derive `Clone` for it, and then take `axum::Extension` as a parameter wrapping the target data inside the handler function you wish to access the shared data.
-
-Since code is best explained with pseudo-code or code, here is a code example:
+Sample app code where `axum::Extension` is used:
 
 ```rust
 use axum::Extension;
@@ -448,7 +486,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(|| async { "Hello, World" }))
         .route("/access_shared_data", get(access_shared_data)) // * route of concern
-        .layer(Extension(shared_data));
+        .layer(Extension(shared_data)); // * take note too
 
     // Let's create a socket to serve our api from
     let addr = SocketAddr::from(([0, 0, 0, 0], 3003));
@@ -519,21 +557,23 @@ struct CreateUserPayload {
 }
 ```
 
+This is perhaps the most verbose approach.
+
 #### middlewares
 
-A middleware is a pre-built piece of code that adds features to your app akin to a browser-plugin. A middleware should work seamlessly with your app to be useful.
+A middleware is a pre-built piece of code that adds features to your app. A middleware is akin to a browser-plugin. It should work seamlessly with your app to be useful.
 
-axum does not have its own bespoke middleware system and instead integrates with tower. This means the ecosystem of tower and tower-http middleware all work with axum.
+`axum` does not have its own bespoke middleware system and instead integrates with `tower`. This means the ecosystem of [`tower`](https://crates.io/crates/tower) and [`tower-http`](https://crates.io/crate/tower-http) middleware all work with axum.
 
 Check this resource to learn more about middlewares, refer to: https://docs.rs/axum/0.6.12/axum/middleware/index.html
 
 #### error handling
 
-axum is based on `tower::Service` which bundles errors through its associated `Error` type. If you have a `Service` (basically in this case, a request handler) that produces an error and that error makes it all the way up to hyper, the connection will be terminated without a response. This is generally not desirable so axum makes sure you always produce a response by relying on the type system.
+`axum` is based on `tower::Service` which bundles errors through its associated `Error` type. If you have a `Service` (basically in this case, a route-handler) that produces an error, and that error makes it all the way up to hyper, the connection will be terminated without a response. This is generally not desirable so axum makes sure you always produce a response by relying on the type system.
 
-axum does this by requiring all services have `Infallible` ( https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html ) as their error type. `Infallible` is the error type for errors that can never happen.
+`axum` does this by requiring all services have type `Infallible` ( https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html ) as their error type. `Infallible` is the error type for errors that can never happen.
 
-This means if you define a handler like:
+This means if you define a route-handler like:
 
 ```rust
 use axum::http::StatusCode;
@@ -543,23 +583,22 @@ async fn handler() -> Result<String, StatusCode> {
 }
 ```
 
-While it looks like it might fail with a `StatusCode`, this actually isn't an error. If this handler returns 'Err(some_status_code), that will still be converted into a Response, and sent back to the client. This is done through `StatusCode`' `IntoResponse` implementation. These are not considered errors in axum.
-This applies to extractors too. If an extractor doesn't match the request, the request will be rejected and a response will be returned without calling your handler. See this resource to learn about handling extractor failures - https://docs.rs/axum/latest/axum/extract/index.html
+While it looks like it might fail with a `StatusCode`, this actually isn't an error. If this handler returns 'Err(some_status_code)', it will still be converted into a `Response`, and sent back to the client. This is done through `StatusCode`'s `IntoResponse` implementation. These are not considered errors in axum.
+This applies to extractors too. If an extractor doesn't match the request, the request will be rejected and a response will be returned without calling your route-handler. See this resource to learn about handling extractor failures - https://docs.rs/axum/latest/axum/extract/index.html
 
 You could implement `IntoResponse` on a struct type, and use it to denote an error type.
-!To-Do: Confirm this claim.
 
 #### CORS (Cross-Origin Resource Sharing)
 
 CORS allow JavaScript in browsers do things with an API that it is otherwise forbidden to do. It does this by disabling built-in protections browsers have for what JavaScript can do. You specify which backend API endpoints you wish to enable CORS for.
 
-<b>N.B</b>: You need to add crate `tower-http` alongside its `cors` feature to enable cors inside your API.
+You need to add crate `tower-http` alongside its `cors` feature to enable cors inside your API.
 
 ```
 $ cargo add tower-http -F cors
 ```
 
-Here's a simple CORS snippet;
+Here is a code sample utilizing CORS:
 
 ```rust
 mod get_path_post_handler
@@ -591,7 +630,7 @@ pub fn all_routes() -> Router {
 
 ##### Database operations
 
-<b>SQLx</b>
+###### SQLx
 
 SQLx is an async, pure Rust + SQL crate featuring compile-time checked queries without a DSL.
 
@@ -601,7 +640,7 @@ Lib.rs: https://lib.rs/crates/sqlx
 
 Crates.io: https://docs.rs/sqlx/latest/sqlx/index.html
 
-<b>SeaORM</b>
+###### SeaORM
 
 SeaORM is a relational ORM to help you build web services in Rust with the familiarity of dynamic languages.
 
@@ -611,7 +650,7 @@ docs.rs: https://docs.rs/sea-orm/latest/sea_orm/
 
 SeaORM Homepage: https://www.sea-ql.org/SeaORM/
 
-<b>Diesel</b>
+###### Diesel
 
 Diesel is a safe, extensible ORM and query builder for Rust. It calls itself the most productive way to interact with databases in Rust because of its safe and composable abstractions over queries.
 
@@ -621,11 +660,11 @@ Official Page: https://diesel.rs
 
 #### Sample axum API that returns json data when aN HTTP GET request is made to it
 
-Please refer to the binary project called `axum_backend` accompanying this repo.
+Please refer to this repo's workspace member named `axum_backend` accompanying this repo.
 
 #### axum ecosystem
 
-Discord:
+Discord: https://discord.gg/tokio
 Matrix: https://matrix.to/#/#tokio-rs/axum:matrix.org
 
 <b>Thank you so much for reading!</b>

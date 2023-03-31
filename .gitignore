@@ -1,3 +1,2 @@
-./yew_frontend/target
-./axum_backend/target
+./yew_frontend/dist
 ./target
