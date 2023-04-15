@@ -15,8 +15,8 @@ pub async fn run_app() {
 
     tracing::debug!("listening on {}", addr);
 
-    // run app  with hyper on localhost:8080
-    axum::Server::bind(&addr) // alternate syntax: &"0.0.0.0:8080".parse().unwrap()
+    // run app  with hyper on localhost:8090
+    axum::Server::bind(&addr) // alternate syntax: &"0.0.0.0:8090".parse().unwrap()
         .serve(app.into_make_service())
         .await
         .unwrap();
@@ -25,5 +25,5 @@ pub async fn run_app() {
 #[tokio::main]
 async fn main() {
     let spawn = tokio::spawn(async { run_app });
-    spawn.await.unwrap(); // the solution he endorsed as correct
+    spawn.await.unwrap();
 }
