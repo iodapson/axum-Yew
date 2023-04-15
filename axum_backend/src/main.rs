@@ -1,5 +1,3 @@
-// use axum_backend::run_app;
-
 mod routes;
 
 use routes::build_routes;
@@ -26,5 +24,6 @@ pub async fn run_app() {
 
 #[tokio::main]
 async fn main() {
-    run_app().await
+    let spawn = tokio::spawn(async { run_app });
+    spawn.await.unwrap(); // the solution he endorsed as correct
 }

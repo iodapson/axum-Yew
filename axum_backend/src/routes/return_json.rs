@@ -10,9 +10,9 @@ pub struct TargetData {
 
 pub async fn return_json_data() -> Json<TargetData> {
     let target_data = TargetData {
-        field_one: "Field One from axum powered backend response".to_owned(),
+        field_one: "axum powered field_one".to_owned(),
         field_two: 1 as i32,
-        field_three: "Field Three from axum powered backend response".to_owned(),
+        field_three: "axum powered field_two".to_owned(),
     };
     Json(target_data)
 }
